@@ -1,64 +1,43 @@
-//create web server
+// Create web server
 const express = require('express');
 const bodyParser = require('body-parser');
+const { randomBytes } = require('crypto');
+const cors = require('cors');
+
+// Create web server
 const app = express();
-const port = 3000;
-
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }));
-
-// parse application/json
 app.use(bodyParser.json());
+app.use(cors());
 
-//serve static files
-app.use(express.static('public'));
+const commentsByPostId = {};
 
-//create route
-app.get('/', (req, res) => {
-    res.send('Hello World!');
+// Get all comments
+app.get('/posts/:id/comments', (req, res) => {
+  res.send(commentsByPostId[req.params.id] || []);
 });
 
-//create route
-app.get('/comments', (req, res) => {
-    res.sendFile(__dirname + '/public/comments.html');
+// Create new comment
+app.post('/posts/:id/comments', (req, res) => {
+  // Generate random ID for comment
+  const commentId = randomBytes(4).toString('hex');
+
+  // Get comment content from request body
+  const { content } = req.body;
+
+  // Get comments for the post
+  const comments = commentsByPostId[req.params.id] || [];
+
+  // Add new comment to array
+  comments.push({ id: commentId, content });
+
+  // Store comments
+  commentsByPostId[req.params.id] = comments;
+
+  // Send response
+  res.status(201).send(comments);
 });
 
-//create route
-app.get('/comments', (req, res) => {
-    res.sendFile(__dirname + '/public/comments.html');
-});
-
-//create route
-app.get('/comments', (req, res) => {
-    res.sendFile(__dirname + '/public/comments.html');
-});
-
-//create route
-app.get('/comments', (req, res) => {
-    res.sendFile(__dirname + '/public/comments.html');
-});
-
-//create route
-app.get('/comments', (req, res) => {
-    res.sendFile(__dirname + '/public/comments.html');
-});
-
-//create route
-app.get('/comments', (req, res) => {
-    res.sendFile(__dirname + '/public/comments.html');
-});
-
-//create route
-app.get('/comments', (req, res) => {
-    res.sendFile(__dirname + '/public/comments.html');
-});
-
-//create route
-app.get('/comments', (req, res) => {
-    res.sendFile(__dirname + '/public/comments.html');
-});
-
-//create route
-app.get('/comments', (req, res) => {
-    res.sendFile(__dirname + '/public/comments.html');
+// Start server
+app.listen(4001, () => {
+  console.log('Listening on 4001');
 });
